@@ -2,30 +2,30 @@ import kotlin.math.pow
 
 class Math{
 
-    val threshHold = 1f
+    val threshold = 1f
 
     fun lineSplitter(dataSet : Array<Coordinate>) : Array<Wall>{
         var done = false
         var counter = -1
 
-        var wallCashe : Array<Wall>? = null
+        var wallCache : Array<Wall>? = null
         var walls : Array<Wall>? = null
-        var pointHightCashe : Array<Float>? = null
+        var pointHeightCache : Array<Float>? = null
 
-        wallCashe!!.plus(Wall(dataSet))
+        wallCache!!.plus(Wall(dataSet))
 
-        while(counter<wallCashe.size){
+        while(counter<wallCache.size){
             counter += 1
-            if ((wallCashe[counter].direction!! <= 1f) and (wallCashe[counter].direction!! >= -1f)){
-                var wall = wallCashe[counter]
+            if ((wallCache[counter].direction!! <= 1f) and (wallCache[counter].direction!! >= -1f)){
+                var wall = wallCache[counter]
                 for (point in wall.points) {
                     var difference = point.x - wall.first.x
-                    var pointCashe = Coordinate(point.x- difference, point.y - difference*wall.direction!!)
-                    pointHightCashe!!.plus((pointCashe.y-wall.first.y).pow(2))
+                    var pointCache = Coordinate(point.x- difference, point.y - difference*wall.direction!!)
+                    pointHeightCache!!.plus((pointCache.y-wall.first.y).pow(2))
                 }
                 var highestValue : Float = 0f
                 var highestPosition : Int = 0
-                for (value in pointHightCashe!!){
+                for (value in pointHeightCache!!){
                     if (value > highestValue){
                         highestValue = value
                         highestPosition = counter
@@ -35,15 +35,15 @@ class Math{
                 if (highestValue > threshHold){
                     var wallOne : Array<Coordinate>? = null
                     var wallTwo : Array<Coordinate>? = null
-                    for (i in 0 until pointHightCashe.size ) {
-                        if(i <= threshHold){
+                    for (i in 0 until pointHeightCache.size ) {
+                        if(i <= threshold){
                             wallOne!!.plus(dataSet[i])
-                        }; if(i>= threshHold) {
+                        }; if(i>= threshold) {
                             wallTwo!!.plus(dataSet[i])
                         }
                     }
-                    wallCashe.plus(Wall(wallOne!!))
-                    wallCashe.plus(Wall(wallTwo!!))
+                    wallCache.plus(Wall(wallOne!!))
+                    wallCache.plus(Wall(wallTwo!!))
                 } else {
                     walls!!.plus(wall)
                 }
