@@ -1,15 +1,17 @@
+package com.lophtix.mapping
+
 import kotlin.math.pow
 
 class Math{
 
     val threshHold = 1f
+    val pointDensity = 2f
 
-    fun lineSplitter(dataSet : Array<Coordinate>) : Array<Wall>{
-        var done = false
+    fun lineSplitter(dataSet : Array<Coordinate>) : MutableList<Wall>{
         var counter = -1
 
         var wallCashe : Array<Wall>? = null
-        var walls : Array<Wall>? = null
+        var walls : MutableList<Wall>? = null
         var pointHightCashe : Array<Float>? = null
 
         wallCashe!!.plus(Wall(dataSet))
@@ -24,11 +26,9 @@ class Math{
                     pointHightCashe!!.plus((pointCashe.y-wall.first.y).pow(2))
                 }
                 var highestValue : Float = 0f
-                var highestPosition : Int = 0
                 for (value in pointHightCashe!!){
                     if (value > highestValue){
                         highestValue = value
-                        highestPosition = counter
                     }
                     counter += 1
                 }
@@ -36,9 +36,9 @@ class Math{
                     var wallOne : Array<Coordinate>? = null
                     var wallTwo : Array<Coordinate>? = null
                     for (i in 0 until pointHightCashe.size ) {
-                        if(i <= threshHold){
+                        if(i <= highestValue){
                             wallOne!!.plus(dataSet[i])
-                        }; if(i>= threshHold) {
+                        }; if(i>= highestValue) {
                             wallTwo!!.plus(dataSet[i])
                         }
                     }
@@ -50,39 +50,14 @@ class Math{
             }
         }
 
-        return walls!!
-    }
-
-    /*fun linReg(dataSet : Array<Coordinate>) : Vector{
-
-        var counter = 0
-
-        var A = 0f
-        var B = 0f
-        var C = 0f
-        var D = 0f
-        var N = 0f
-
-        for(coordinate in dataSet){
-            var x = coordinate.x
-            var y = coordinate.y
-
-            A += x*y
-            B += x*x
-            C += x
-            D += y
-            N += 1
-
-            counter += 1
+        for (wall in walls!!){
+            var density = wall.length/wall.points.size
+            if(density < pointDensity){
+                walls.remove(wall)
+            }
         }
-
-        var k : Float = ((N*A)-(C*D))/((N*B)-(C*C))
-        var m : Float = ((B*D)-(A*C))/((N*B)-(C*C))
-        var l : Float = ((dataSet[counter-1].x - dataSet[0].x).pow(2))+((dataSet[counter-1].y - dataSet[0].y).pow(2)).pow(1/2)
-
-        return Vector(k,l,m)
-
-    }*/
+        return walls
+    }
 }
 
 data class Coordinate(val x : Float,val y : Float){
@@ -93,6 +68,8 @@ data class Wall(val points : Array<Coordinate>){
 
     val first = points.first()
     val last = points.last()
+
+    val length = ((last.x-first.x).pow(2)+(last.y-first.y).pow(2)).pow(1/2)
 
     var direction : Float? = null
 
